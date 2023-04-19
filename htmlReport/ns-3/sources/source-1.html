@@ -1,0 +1,146 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > AdDataCache</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.raghu.adslite.data</a>
+</div>
+
+<h1>Coverage Summary for Class: AdDataCache (com.raghu.adslite.data)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AdDataCache</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    85.7%
+  </span>
+  <span class="absValue">
+    (6/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    91.7%
+  </span>
+  <span class="absValue">
+    (11/12)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.raghu.adslite.data;
+&nbsp;
+&nbsp;import com.raghu.adslite.objects.AdImpression;
+&nbsp;import com.raghu.adslite.objects.ShortUrlData;
+&nbsp;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.concurrent.ConcurrentHashMap;
+&nbsp;import java.util.concurrent.atomic.AtomicLong;
+&nbsp;
+<b class="nc">&nbsp;public class AdDataCache {</b>
+&nbsp;
+&nbsp;    // Store Map&lt;campaignId, AdImpression&gt;
+<b class="fc">&nbsp;    private static Map&lt;Long, AdImpression&gt; campaignIdImpressionCountMap = new ConcurrentHashMap&lt;&gt;();</b>
+&nbsp;
+&nbsp;    // Store Map&lt;shortUrlString, ShortUrlData&gt;
+<b class="fc">&nbsp;    private static Map&lt;String, ShortUrlData&gt; shortUrlCampaignShortUrlMap = new ConcurrentHashMap&lt;&gt;();</b>
+&nbsp;
+&nbsp;
+&nbsp;    public static long addImpression(long campaignId) {
+<b class="fc">&nbsp;        campaignIdImpressionCountMap.putIfAbsent(campaignId,</b>
+<b class="fc">&nbsp;                new AdImpression.Builder(campaignId, new AtomicLong()).build());</b>
+<b class="fc">&nbsp;        AtomicLong count = campaignIdImpressionCountMap.get(campaignId).getCount();</b>
+<b class="fc">&nbsp;        return count.incrementAndGet();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static AdImpression getImpressionCount(Long campaignId) {
+<b class="fc">&nbsp;        return campaignIdImpressionCountMap.get(campaignId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static ShortUrlData getShortUrl(String shortUrl) {
+<b class="fc">&nbsp;        return shortUrlCampaignShortUrlMap.get(shortUrl);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static void addShortUrl(String shortUrl, ShortUrlData shortUrlData) {
+<b class="fc">&nbsp;        shortUrlCampaignShortUrlMap.put(shortUrl, shortUrlData);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static void clearTrackingData() {
+<b class="fc">&nbsp;        campaignIdImpressionCountMap.clear();</b>
+<b class="fc">&nbsp;        shortUrlCampaignShortUrlMap.clear();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-04-20 12:10</div>
+</div>
+</body>
+</html>

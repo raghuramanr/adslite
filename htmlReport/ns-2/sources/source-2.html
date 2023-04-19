@@ -1,0 +1,207 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > AdsManager</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.raghu.adslite.business</a>
+</div>
+
+<h1>Coverage Summary for Class: AdsManager (com.raghu.adslite.business)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AdsManager</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    97.1%
+  </span>
+  <span class="absValue">
+    (34/35)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">AdsManager$MockitoMock$HEmRzhyv</td>
+  </tr>
+  <tr>
+    <td class="name">AdsManager$MockitoMock$HEmRzhyv$auxiliary$AWAcJlwF</td>
+  </tr>
+  <tr>
+    <td class="name">AdsManager$MockitoMock$HEmRzhyv$auxiliary$hWwm4SvP</td>
+  </tr>
+  <tr>
+    <td class="name">AdsManager$MockitoMock$HEmRzhyv$auxiliary$JcMfDRIN</td>
+  </tr>
+  <tr>
+    <td class="name">AdsManager$MockitoMock$HEmRzhyv$auxiliary$tO0l4NPQ</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    97.1%
+  </span>
+  <span class="absValue">
+    (34/35)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.raghu.adslite.business;
+&nbsp;
+&nbsp;import com.raghu.adslite.AdProcessorResponseState;
+&nbsp;import com.raghu.adslite.data.AdDataCache;
+&nbsp;import com.raghu.adslite.exception.BusinessException;
+&nbsp;import com.raghu.adslite.objects.AdResponse;
+&nbsp;import com.raghu.adslite.objects.ShortUrlData;
+&nbsp;import com.raghu.adslite.processor.*;
+&nbsp;import com.raghu.adslite.utils.SequenceGenerator;
+&nbsp;import com.raghu.adslite.utils.ShortUrlGenerator;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;import java.util.LinkedList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Queue;
+&nbsp;
+&nbsp;/* Performs /adddecision task. Create PipelineContext and runs the AdPipeline with required processors.
+&nbsp;* If successful, returns AdResponse with campaignId and impressionUrl.
+&nbsp; */
+&nbsp;@Component
+<b class="fc">&nbsp;public class AdsManager {</b>
+&nbsp;
+&nbsp;    // TODO: Move to application.properties
+<b class="fc">&nbsp;    private static String DOMAIN_URL = &quot;http://localhost:8000/&quot;;</b>
+&nbsp;
+&nbsp;    public AdResponse getAd(List&lt;String&gt; keywords) throws BusinessException {
+<b class="fc">&nbsp;        AdPipelineContext adPipelineContext = new AdPipelineContext();</b>
+&nbsp;        // Create queue for processors and execute them in order to
+&nbsp;        // filter messages in each pipeline task.
+<b class="fc">&nbsp;        Queue&lt;Processor&gt; processors = new LinkedList&lt;&gt;();</b>
+<b class="fc">&nbsp;        processors.add(new KeywordProcessor(adPipelineContext, keywords));</b>
+<b class="fc">&nbsp;        processors.add(new CappingProcessor(adPipelineContext));</b>
+<b class="fc">&nbsp;        processors.add(new CpmProcessor(adPipelineContext));</b>
+<b class="fc">&nbsp;        processors.add(new CampaignTimeProcessor(adPipelineContext));</b>
+<b class="fc">&nbsp;        processors.add(new CampaignIdValueProcessor(adPipelineContext));</b>
+<b class="fc">&nbsp;        while (!processors.isEmpty() &amp;&amp; adStateIncomplete(adPipelineContext)) {</b>
+<b class="fc">&nbsp;            Processor processor = processors.poll();</b>
+&nbsp;            // resolve and compute AdProcessorResponseState
+<b class="fc">&nbsp;            processor.resolve();</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;        // return campaignId, short url
+<b class="fc">&nbsp;        if (adPipelineContext.getAdProcessorResponseState() == AdProcessorResponseState.SUCCESS) {</b>
+<b class="fc">&nbsp;            long resultCampaignId = adPipelineContext.getIds().iterator().next();</b>
+<b class="fc">&nbsp;            AdResponse adResponse = new AdResponse();</b>
+<b class="fc">&nbsp;            adResponse.setCampaignId(resultCampaignId);</b>
+<b class="fc">&nbsp;            adResponse.setImpressionUrl(</b>
+<b class="fc">&nbsp;                    String.join(&quot;&quot;,</b>
+&nbsp;                            DOMAIN_URL,
+<b class="fc">&nbsp;                            generateShortUrl(resultCampaignId)));</b>
+<b class="fc">&nbsp;            return adResponse;</b>
+<b class="fc">&nbsp;        } else if (adPipelineContext.getAdProcessorResponseState() == AdProcessorResponseState.NO_DATA) {</b>
+&nbsp;            // No data found. Return null.
+<b class="fc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;        // Any other state is unexpected. Throw an exception and
+&nbsp;        // return HttpStatus 500.
+<b class="nc">&nbsp;        throw new RuntimeException(&quot;Unhandled state received: &quot; + adPipelineContext.getAdProcessorResponseState());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private boolean adStateIncomplete(final AdPipelineContext adPipelineContext) {
+<b class="fc">&nbsp;        AdProcessorResponseState adState = adPipelineContext.getAdProcessorResponseState();</b>
+<b class="fc">&nbsp;        return adState == AdProcessorResponseState.RESOLVE_CAMPAIGNS_CONFLICT || adState == AdProcessorResponseState.STARTED;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private String generateShortUrl(long resultCampaignId) {
+<b class="fc">&nbsp;        SequenceGenerator sequenceGenerator = new SequenceGenerator();</b>
+<b class="fc">&nbsp;        long shortUrlId = sequenceGenerator.nextId();</b>
+<b class="fc">&nbsp;        String shortUrl = ShortUrlGenerator.idToShortURL(shortUrlId);</b>
+<b class="fc">&nbsp;        ShortUrlData shortUrlData = new ShortUrlData.Builder(</b>
+<b class="fc">&nbsp;                shortUrlId, resultCampaignId, System.currentTimeMillis()/1000)</b>
+<b class="fc">&nbsp;                .build();</b>
+<b class="fc">&nbsp;        AdDataCache.addShortUrl(shortUrl, shortUrlData);</b>
+<b class="fc">&nbsp;        return shortUrl;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Used only for UT purposes.
+&nbsp;    // Handy util to clear cache prior to UT testing.
+&nbsp;    public void clearImpressionShortUrlData() {
+<b class="fc">&nbsp;        AdDataCache.clearTrackingData();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-04-20 12:10</div>
+</div>
+</body>
+</html>

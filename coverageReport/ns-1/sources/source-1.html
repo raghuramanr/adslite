@@ -1,0 +1,118 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > AdProcessorResponseState</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.raghu.adslite</a>
+</div>
+
+<h1>Coverage Summary for Class: AdProcessorResponseState (com.raghu.adslite)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AdProcessorResponseState</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.raghu.adslite;
+&nbsp;
+&nbsp;/* AdProcessorResponseState maintained in AdPipelineContext
+&nbsp;    Set based campaignId count in each *Processor processing.
+&nbsp;    resultIds count =1 will be SUCCESS and that campaign will be returned.
+&nbsp;    RESOLVE_CAMPAIGNS_CONFLICT is set when count &gt; 1 for further
+&nbsp;    processing.
+&nbsp;    NO_DATA is set when no campaignId is found and will exit with
+&nbsp; */
+<b class="fc">&nbsp;public enum AdProcessorResponseState {</b>
+<b class="fc">&nbsp;    STARTED,</b>
+<b class="fc">&nbsp;    NO_DATA,</b>
+<b class="fc">&nbsp;    RESOLVE_CAMPAIGNS_CONFLICT,</b>
+<b class="fc">&nbsp;    SUCCESS</b>
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-04-19 13:17</div>
+</div>
+</body>
+</html>

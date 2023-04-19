@@ -15,12 +15,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-/* Implements /adddecision endpoint.
-
+/* Performs /adddecision task. Create PipelineContext and runs the AdPipeline with required processors.
+* If successful, returns AdResponse with campaignId and impressionUrl.
  */
 @Component
 public class AdsManager {
 
+    // TODO: Move to application.properties
     private static String DOMAIN_URL = "http://localhost:8000/";
 
     public AdResponse getAd(List<String> keywords) throws BusinessException {
@@ -45,7 +46,7 @@ public class AdsManager {
             adResponse.setCampaignId(resultCampaignId);
             adResponse.setImpressionUrl(
                     String.join("",
-                            "http://localhost:8000/",
+                            DOMAIN_URL,
                             generateShortUrl(resultCampaignId)));
             return adResponse;
         } else if (adPipelineContext.getAdProcessorResponseState() == AdProcessorResponseState.NO_DATA) {

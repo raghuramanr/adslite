@@ -1,0 +1,131 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > KeywordValidator</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.raghu.adslite.validator</a>
+</div>
+
+<h1>Coverage Summary for Class: KeywordValidator (com.raghu.adslite.validator)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">KeywordValidator</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.raghu.adslite.validator;
+&nbsp;
+&nbsp;import com.raghu.adslite.enums.CampaignValidationStatus;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;import java.util.regex.Pattern;
+&nbsp;
+&nbsp;public class KeywordValidator implements Validator {
+&nbsp;
+&nbsp;    List&lt;String&gt; keywords;
+<b class="fc">&nbsp;    public KeywordValidator(List&lt;String&gt; keywords) {</b>
+<b class="fc">&nbsp;        this.keywords = keywords;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public CampaignValidationStatus validate() {
+<b class="fc">&nbsp;        if (keywords == null || keywords.isEmpty()) {</b>
+<b class="fc">&nbsp;            return CampaignValidationStatus.KEYOWRD_INVALID;</b>
+&nbsp;        }
+&nbsp;        // Alphanumeric, spaces, _, -, and .
+&nbsp;        // Check for any invalid keyword
+<b class="fc">&nbsp;        Optional&lt;String&gt; foundInvalid = keywords.stream()</b>
+<b class="fc">&nbsp;                .filter(keyword -&gt; !Pattern.matches(&quot;[a-zA-Z0-9 \\-_\\.]+&quot;, keyword))</b>
+<b class="fc">&nbsp;                .findAny();</b>
+<b class="fc">&nbsp;        return foundInvalid.isPresent() ? CampaignValidationStatus.KEYOWRD_INVALID : CampaignValidationStatus.SUCCESS;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-04-19 13:17</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,128 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ShortUrlGenerator</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.raghu.adslite.utils</a>
+</div>
+
+<h1>Coverage Summary for Class: ShortUrlGenerator (com.raghu.adslite.utils)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ShortUrlGenerator</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (2/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    88.9%
+  </span>
+  <span class="absValue">
+    (8/9)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.raghu.adslite.utils;
+&nbsp;
+&nbsp;/*
+&nbsp;Implementation to convert long id to short URL.
+&nbsp; */
+<b class="nc">&nbsp;public class ShortUrlGenerator</b>
+&nbsp;{
+&nbsp;    // 62 possible characters used in shortURL
+<b class="fc">&nbsp;    private static char map[] = &quot;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&quot;.toCharArray();</b>
+&nbsp;
+&nbsp;    // Function to generate a short url from long 64 bit ID
+&nbsp;    public static String idToShortURL(long n)
+&nbsp;    {
+<b class="fc">&nbsp;        StringBuffer shorturl = new StringBuffer();</b>
+&nbsp;        // Convert given integer id to a base 62 number
+<b class="fc">&nbsp;        while (n &gt; 0)</b>
+&nbsp;        {
+<b class="fc">&nbsp;            int remainder = (int) Math.floorMod(n, 62L);</b>
+<b class="fc">&nbsp;            shorturl.append(map[remainder]);</b>
+<b class="fc">&nbsp;            n = n / 62;</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;        // Reverse shortURL to complete base conversion
+<b class="fc">&nbsp;        return shorturl.reverse().toString();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-04-19 13:17</div>
+</div>
+</body>
+</html>

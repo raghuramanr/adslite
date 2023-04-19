@@ -14,6 +14,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+/* Performs /campaign task. Create PipelineContext and runs the AdPipeline with required validators.
+ * If successful, returns generated CampaignId.
+ */
+
 @Component
 public class CampaignManager {
 

@@ -11,15 +11,18 @@ public class ImpressionRecorder {
 
     // Enhancement feature. recordImpression arrives after 5 minutes,
     // reject the recording in cache.
-    public static long IMPRESSION_EXPIRY_IN_SECONDS = 600;
+    public static long IMPRESSION_EXPIRY_IN_SECONDS = 900;
     public boolean recordImpression(String shortUrl) throws BusinessException {
-        if (shortUrl == null) {
+        if (shortUrl == null || shortUrl.isEmpty()) {
             throw new BusinessException(CampaignValidationStatus.SHORT_URL_IS_NULL, "Short URL is null");
         }
         ShortUrlData shortUrlData = AdDataCache.getShortUrl(shortUrl);
         if (shortUrlData == null) {
             throw new BusinessException(CampaignValidationStatus.SHORT_URL_NOT_FOUND, "Short URL not found");
         }
+        // Tampering by bot.
+        // Check if impression is delayed by IMPRESSION_EXPIRY_IN_SECONDS. Can happen if bots may try to reuse short url.
+        //
         if (shortUrlData.getImpressionTime() + IMPRESSION_EXPIRY_IN_SECONDS < System.currentTimeMillis()/1000) {
             throw new BusinessException(CampaignValidationStatus.SHORT_URL_EXPIRED, "Short URL expired.");
         }

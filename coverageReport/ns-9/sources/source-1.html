@@ -1,0 +1,206 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > SequenceGenerator</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.raghu.adslite.utils</a>
+</div>
+
+<h1>Coverage Summary for Class: SequenceGenerator (com.raghu.adslite.utils)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SequenceGenerator</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    85.7%
+  </span>
+  <span class="absValue">
+    (6/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    69%
+  </span>
+  <span class="absValue">
+    (29/42)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.raghu.adslite.utils;
+&nbsp;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;import java.net.NetworkInterface;
+&nbsp;import java.security.SecureRandom;
+&nbsp;import java.time.Instant;
+&nbsp;import java.util.Enumeration;
+&nbsp;
+&nbsp;public class SequenceGenerator {
+&nbsp;    private static final int UNUSED_BITS = 1; // Sign bit, Unused (always set to 0)
+&nbsp;    private static final int EPOCH_BITS = 41;
+&nbsp;    private static final int NODE_ID_BITS = 10;
+&nbsp;    private static final int SEQUENCE_BITS = 12;
+&nbsp;
+<b class="fc">&nbsp;    private static final int maxNodeId = (int)(Math.pow(2, NODE_ID_BITS) - 1);</b>
+<b class="fc">&nbsp;    private static final int maxSequence = (int)(Math.pow(2, SEQUENCE_BITS) - 1);</b>
+&nbsp;
+&nbsp;    // Custom Epoch (January 1, 2015 Midnight UTC = 2015-01-01T00:00:00Z)
+&nbsp;    private static final long CUSTOM_EPOCH = 1420070400000L;
+&nbsp;
+&nbsp;    private final int nodeId;
+&nbsp;
+<b class="fc">&nbsp;    private volatile long lastTimestamp = -1L;</b>
+<b class="fc">&nbsp;    private volatile long sequence = 0L;</b>
+&nbsp;
+&nbsp;    // Create SequenceGenerator with a nodeId
+<b class="nc">&nbsp;    public SequenceGenerator(int nodeId) {</b>
+<b class="nc">&nbsp;        if(nodeId &lt; 0 || nodeId &gt; maxNodeId) {</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(String.format(&quot;NodeId must be between %d and %d&quot;, 0, maxNodeId));</b>
+&nbsp;        }
+<b class="nc">&nbsp;        this.nodeId = nodeId;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Let SequenceGenerator generate a nodeId
+&nbsp;
+<b class="fc">&nbsp;    public SequenceGenerator() {</b>
+<b class="fc">&nbsp;        this.nodeId = createNodeId();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    public long nextId() {
+<b class="fc">&nbsp;        long currentTimestamp = timestamp();</b>
+&nbsp;
+<b class="fc">&nbsp;        if(currentTimestamp &lt; lastTimestamp) {</b>
+<b class="nc">&nbsp;            throw new IllegalStateException(&quot;Invalid System Clock!&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        if (currentTimestamp == lastTimestamp) {</b>
+<b class="nc">&nbsp;            sequence = (sequence + 1) &amp; maxSequence;</b>
+<b class="nc">&nbsp;            if(sequence == 0) {</b>
+&nbsp;                // Sequence Exhausted, wait till next millisecond.
+<b class="nc">&nbsp;                currentTimestamp = waitNextMillis(currentTimestamp);</b>
+&nbsp;            }
+&nbsp;        } else {
+&nbsp;            // reset sequence to start with zero for the next millisecond
+<b class="fc">&nbsp;            sequence = 0;</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        lastTimestamp = currentTimestamp;</b>
+&nbsp;
+<b class="fc">&nbsp;        long id = currentTimestamp &lt;&lt; (NODE_ID_BITS + SEQUENCE_BITS);</b>
+<b class="fc">&nbsp;        id |= (nodeId &lt;&lt; SEQUENCE_BITS);</b>
+<b class="fc">&nbsp;        id |= sequence;</b>
+<b class="fc">&nbsp;        return id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    // Get current timestamp in milliseconds, adjust for the custom epoch.
+&nbsp;    private static long timestamp() {
+<b class="fc">&nbsp;        return Instant.now().toEpochMilli() - CUSTOM_EPOCH;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Block and wait till next millisecond
+&nbsp;    private long waitNextMillis(long currentTimestamp) {
+<b class="nc">&nbsp;        while (currentTimestamp == lastTimestamp) {</b>
+<b class="nc">&nbsp;            currentTimestamp = timestamp();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return currentTimestamp;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private int createNodeId() {
+&nbsp;        int nodeId;
+&nbsp;        try {
+<b class="fc">&nbsp;            StringBuilder sb = new StringBuilder();</b>
+<b class="fc">&nbsp;            Enumeration&lt;NetworkInterface&gt; networkInterfaces = NetworkInterface.getNetworkInterfaces();</b>
+<b class="fc">&nbsp;            while (networkInterfaces.hasMoreElements()) {</b>
+<b class="fc">&nbsp;                NetworkInterface networkInterface = networkInterfaces.nextElement();</b>
+<b class="fc">&nbsp;                byte[] mac = networkInterface.getHardwareAddress();</b>
+<b class="fc">&nbsp;                if (mac != null) {</b>
+<b class="fc">&nbsp;                    for(int i = 0; i &lt; mac.length; i++) {</b>
+<b class="fc">&nbsp;                        sb.append(String.format(&quot;%02X&quot;, mac[i]));</b>
+&nbsp;                    }
+&nbsp;                }
+<b class="fc">&nbsp;            }</b>
+<b class="fc">&nbsp;            nodeId = sb.toString().hashCode();</b>
+<b class="nc">&nbsp;        } catch (Exception ex) {</b>
+<b class="nc">&nbsp;            nodeId = (new SecureRandom().nextInt());</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        nodeId = nodeId &amp; maxNodeId;</b>
+<b class="fc">&nbsp;        return nodeId;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-04-19 13:17</div>
+</div>
+</body>
+</html>

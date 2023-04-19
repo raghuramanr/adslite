@@ -1,0 +1,201 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > AdsLiteServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.raghu.adslite.restservice.impl</a>
+</div>
+
+<h1>Coverage Summary for Class: AdsLiteServiceImpl (com.raghu.adslite.restservice.impl)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AdsLiteServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    25%
+  </span>
+  <span class="absValue">
+    (1/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    3%
+  </span>
+  <span class="absValue">
+    (1/33)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">AdsLiteServiceImpl$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    25%
+  </span>
+  <span class="absValue">
+    (1/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    3%
+  </span>
+  <span class="absValue">
+    (1/33)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.raghu.adslite.restservice.impl;
+&nbsp;
+&nbsp;import com.raghu.adslite.business.AdsManager;
+&nbsp;import com.raghu.adslite.business.CampaignManager;
+&nbsp;import com.raghu.adslite.business.ImpressionRecorder;
+&nbsp;import com.raghu.adslite.enums.CampaignValidationStatus;
+&nbsp;import com.raghu.adslite.exception.BusinessException;
+&nbsp;import com.raghu.adslite.objects.AdRequest;
+&nbsp;import com.raghu.adslite.objects.AdResponse;
+&nbsp;import com.raghu.adslite.objects.Campaign;
+&nbsp;import com.raghu.adslite.objects.CampaignResponse;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.boot.autoconfigure.SpringBootApplication;
+&nbsp;import org.springframework.context.annotation.ComponentScan;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;@SpringBootApplication
+&nbsp;@ComponentScan({&quot;com.raghu.adslite&quot;})
+&nbsp;@RestController
+<b class="fc">&nbsp;public class AdsLiteServiceImpl</b>
+&nbsp;{
+&nbsp;    @Autowired
+&nbsp;    private AdsManager adsManager;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private CampaignManager campaignManager;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private ImpressionRecorder impressionRecorder;
+&nbsp;
+&nbsp;    @PostMapping(value = &quot;/addecision&quot;)
+&nbsp;    public ResponseEntity&lt;Object&gt; getAds(@RequestBody AdRequest adRequest)
+&nbsp;    {
+&nbsp;        try {
+<b class="nc">&nbsp;            AdResponse adResponse = adsManager.getAd(adRequest.getKeywords());</b>
+<b class="nc">&nbsp;            if (adResponse == null) {</b>
+<b class="nc">&nbsp;                return new ResponseEntity&lt;&gt;(HttpStatus.OK);</b>
+<b class="nc">&nbsp;            } else return new ResponseEntity&lt;&gt;(adResponse,HttpStatus.OK);</b>
+<b class="nc">&nbsp;        } catch (BusinessException e) {</b>
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+<b class="nc">&nbsp;            return new ResponseEntity&lt;&gt;(HttpStatus.BAD_REQUEST);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(value = &quot;/campaign&quot;)
+&nbsp;    public ResponseEntity&lt;CampaignResponse&gt; createCampaign(@RequestBody Campaign campaign)
+&nbsp;    {
+&nbsp;        try {
+<b class="nc">&nbsp;            if (campaign == null) {</b>
+<b class="nc">&nbsp;                throw new BusinessException(CampaignValidationStatus.CAMPAIGN_IS_NULL, &quot;Campaign is null&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            CampaignResponse campaignResponse = campaignManager.create(campaign.getMaxImpression(), campaign.getCpm(), campaign.getTargetKeywords(), campaign.getStartTimestamp(), campaign.getEndTimestamp());</b>
+<b class="nc">&nbsp;            return new ResponseEntity&lt;&gt;(campaignResponse,HttpStatus.CREATED);</b>
+<b class="nc">&nbsp;        } catch (BusinessException e) {</b>
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+<b class="nc">&nbsp;            return new ResponseEntity&lt;&gt;(HttpStatus.BAD_REQUEST);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/{shortUrl}&quot;)
+&nbsp;    public ResponseEntity&lt;Object&gt; record(@PathVariable String shortUrl)
+&nbsp;    {
+&nbsp;        try {
+<b class="nc">&nbsp;            if (shortUrl == null || shortUrl.isEmpty()) {</b>
+<b class="nc">&nbsp;                throw new BusinessException(CampaignValidationStatus.SHORT_URL_IS_NULL, &quot;shortUrl is null or empty.&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            boolean status = impressionRecorder.recordImpression(shortUrl);</b>
+<b class="nc">&nbsp;            if (!status) {</b>
+<b class="nc">&nbsp;                throw new BusinessException(CampaignValidationStatus.IMPRESSION_NOT_FOUND, &quot;Impression not recorded.&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            return new ResponseEntity&lt;&gt;(HttpStatus.OK);</b>
+<b class="nc">&nbsp;        } catch (BusinessException e) {</b>
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+<b class="nc">&nbsp;            return new ResponseEntity&lt;&gt;(HttpStatus.BAD_REQUEST);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-04-19 13:17</div>
+</div>
+</body>
+</html>

@@ -5,6 +5,10 @@ import com.raghu.adslite.data.CampaignCache;
 
 import java.util.Set;
 
+/**
+ * This class is used to store the context of the AdPipeline for life cycle of the request.
+ *
+ */
 public class AdPipelineContext {
     private Set<Long> ids;
 

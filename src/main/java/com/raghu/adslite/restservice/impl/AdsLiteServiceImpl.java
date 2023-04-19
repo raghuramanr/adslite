@@ -9,12 +9,15 @@ import com.raghu.adslite.objects.AdRequest;
 import com.raghu.adslite.objects.AdResponse;
 import com.raghu.adslite.objects.Campaign;
 import com.raghu.adslite.objects.CampaignResponse;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Iterator;
 
 @SpringBootApplication
 @ComponentScan({"com.raghu.adslite"})
@@ -36,31 +39,31 @@ public class AdsLiteServiceImpl
         try {
             AdResponse adResponse = adsManager.getAd(adRequest.getKeywords());
             if (adResponse == null) {
-                return new ResponseEntity<>(HttpStatus.OK);
+                JSONObject jsonObject = new JSONObject();
+                return new ResponseEntity<>(jsonObject, HttpStatus.OK);
             } else return new ResponseEntity<>(adResponse,HttpStatus.OK);
         } catch (BusinessException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            JSONObject jsonObject = new JSONObject();
+            return new ResponseEntity<>(jsonObject, HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
     @PostMapping(value = "/campaign")
-    public ResponseEntity<CampaignResponse> createCampaign(@RequestBody Campaign campaign)
+    public ResponseEntity<Object> createCampaign(@RequestBody Campaign campaign)
     {
         try {
             if (campaign == null) {
-                throw new BusinessException(CampaignValidationStatus.CAMPAIGN_IS_NULL, "Campaign is null");
+                JSONObject jsonObject = new JSONObject();
+                return new ResponseEntity<>(jsonObject,HttpStatus.BAD_REQUEST);
             }
             CampaignResponse campaignResponse = campaignManager.create(campaign.getMaxImpression(), campaign.getCpm(), campaign.getTargetKeywords(), campaign.getStartTimestamp(), campaign.getEndTimestamp());
             return new ResponseEntity<>(campaignResponse,HttpStatus.CREATED);
         } catch (BusinessException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            JSONObject jsonObject = new JSONObject();
+            return new ResponseEntity<>(jsonObject, HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
@@ -69,19 +72,16 @@ public class AdsLiteServiceImpl
     public ResponseEntity<Object> record(@PathVariable String shortUrl)
     {
         try {
-            if (shortUrl == null || shortUrl.isEmpty()) {
-                throw new BusinessException(CampaignValidationStatus.SHORT_URL_IS_NULL, "shortUrl is null or empty.");
-            }
             boolean status = impressionRecorder.recordImpression(shortUrl);
             if (!status) {
-                throw new BusinessException(CampaignValidationStatus.IMPRESSION_NOT_FOUND, "Impression not recorded.");
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-            return new ResponseEntity<>(HttpStatus.OK);
+            JSONObject jsonObject = new JSONObject();
+            return new ResponseEntity<>(jsonObject, HttpStatus.OK);
         } catch (BusinessException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            JSONObject jsonObject = new JSONObject();
+            return new ResponseEntity<>(jsonObject, HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

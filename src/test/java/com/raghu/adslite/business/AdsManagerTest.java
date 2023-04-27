@@ -44,7 +44,7 @@ public class AdsManagerTest {
     }
 
     @Test
-    void demoTest() throws BusinessException {
+    void demo_2_campaigns_each_with_1_imp_max_Test() throws BusinessException {
         adsManager.clearImpressionShortUrlData();
         campaignManager.clearCache();
         List<String> keywords = Arrays.asList("iphone", "5G");
@@ -89,6 +89,77 @@ public class AdsManagerTest {
         Assert.isNull(adResponse, "Impression capped out.");
 
     }
+
+    @Test
+    void demo_2_campaigns_with_1_and_3_impression_max_Test() throws BusinessException {
+        adsManager.clearImpressionShortUrlData();
+        campaignManager.clearCache();
+        List<String> keywords = Arrays.asList(keyword_1, keyword_2);
+        CampaignResponse campaignResponse_1 = campaignManager.create(1, 20, keywords, 1642493821, 1742580221);
+        Assert.isTrue(campaignResponse_1.getCampaignId() > 0, "Campaign created.");
+        long campaignId_1 = campaignResponse_1.getCampaignId();
+
+        CampaignResponse campaignResponse_2 = campaignManager.create(3, 10, keywords, 1642493821, 1742580221);
+        Assert.isTrue(campaignResponse_2.getCampaignId() > 0, "Campaign created.");
+        long campaignId_2 = campaignResponse_2.getCampaignId();
+
+        AdResponse adResponse = adsManager.getAd(Arrays.asList(keyword_1));
+        Assert.isTrue(adResponse.getCampaignId() == campaignId_1, "Ad Campaign id valid.");
+        String shortUrl_1 = adResponse.getImpressionUrl().replace(DOMAIN_URL, "");
+        Assert.isTrue(!StringUtils.isBlank(shortUrl_1), "Ad shorturl_1 valid.");
+
+        boolean recordStatus = true;
+        try {
+            recordStatus = impressionRecorder.recordImpression(shortUrl_1);
+        } catch (Exception ex) {
+            recordStatus = false;
+        }
+        Assert.isTrue(recordStatus, "Impression recorded successfully");
+
+        adResponse = adsManager.getAd(Arrays.asList("Android"));
+        Assert.isNull(adResponse, "No matching ad.");
+
+        adResponse = adsManager.getAd(Arrays.asList("iphone", "5G"));
+        Assert.isTrue(adResponse.getCampaignId() == campaignId_2, "Ad Campaign 2 id valid.");
+        String shortUrl_2 = adResponse.getImpressionUrl().replace(DOMAIN_URL, "");;
+        Assert.isTrue(!StringUtils.isBlank(shortUrl_2), "Ad shorturl_2 valid.");
+
+        recordStatus = true;
+        try {
+            recordStatus = impressionRecorder.recordImpression(shortUrl_2);
+        } catch (Exception ex) {
+            recordStatus = false;
+        }
+        Assert.isTrue(recordStatus, "Impression for campaign_2 recorded successfully");
+
+        adResponse = adsManager.getAd(Arrays.asList("iphone"));
+        Assert.isTrue(adResponse.getCampaignId() == campaignId_2, "Ad Campaign 2 id valid.");
+        String shortUrl_3 = adResponse.getImpressionUrl().replace(DOMAIN_URL, "");
+        Assert.isTrue(!StringUtils.isBlank(shortUrl_3), "Ad shorturl_2 valid.");
+        recordStatus = true;
+        try {
+            recordStatus = impressionRecorder.recordImpression(shortUrl_3);
+        } catch (Exception ex) {
+            recordStatus = false;
+        }
+        Assert.isTrue(recordStatus, "Impression for campaign_2 recorded successfully");
+
+        adResponse = adsManager.getAd(Arrays.asList("iphone"));
+        Assert.isTrue(adResponse.getCampaignId() == campaignId_2, "Ad Campaign 2 id valid.");
+        String shortUrl_4 = adResponse.getImpressionUrl().replace(DOMAIN_URL, "");
+        Assert.isTrue(!StringUtils.isBlank(shortUrl_4), "Ad shorturl_2 valid.");
+        recordStatus = true;
+        try {
+            recordStatus = impressionRecorder.recordImpression(shortUrl_4);
+        } catch (Exception ex) {
+            recordStatus = false;
+        }
+        Assert.isTrue(recordStatus, "Impression for campaign_2 recorded successfully");
+
+        adResponse = adsManager.getAd(Arrays.asList("iphone"));
+        Assert.isNull(adResponse, "No matching ad.");
+    }
+
 
     private CampaignResponse createCampaign(long maxImpression, float cpm, List<String> targetKeywords, long startTimestamp, long endTimestamp) throws BusinessException {
         return campaignManager.create(maxImpression, cpm, targetKeywords, startTimestamp, endTimestamp);
